@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-07-30 17:32-0600\n"
+"POT-Creation-Date: 2024-08-23 04:47+0000\n"
 "PO-Revision-Date: 2016-05-02 08:49-0700\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -3215,6 +3215,9 @@ msgstr ""
 msgid "Dashboard [{}] just got created and chart [{}] was added to it"
 msgstr ""
 
+msgid "Dashboard cannot be copied due to invalid parameters."
+msgstr ""
+
 msgid "Dashboard could not be deleted."
 msgstr ""
 
@@ -4310,6 +4313,9 @@ msgstr ""
 
 #, fuzzy
 msgid "Embed dashboard"
+msgstr ""
+
+msgid "Embedded dashboard could not be deleted."
 msgstr ""
 
 msgid "Embedding deactivated."
@@ -8691,6 +8697,9 @@ msgstr ""
 msgid "Select a sheet name from the uploaded file"
 msgstr ""
 
+msgid "Select a tab"
+msgstr ""
+
 msgid ""
 "Select a time grain for the visualization. The grain is the time interval"
 " represented by a single point on the chart."
@@ -8829,6 +8838,9 @@ msgid "Select scheme"
 msgstr ""
 
 msgid "Select subject"
+msgstr ""
+
+msgid "Select tab"
 msgstr ""
 
 msgid "Select table or type to search tables"
@@ -9686,9 +9698,6 @@ msgstr ""
 msgid "TABLES"
 msgstr ""
 
-msgid "TEMPORAL X-AXIS"
-msgstr ""
-
 msgid "TEMPORAL_RANGE"
 msgstr ""
 
@@ -9822,6 +9831,9 @@ msgstr ""
 msgid ""
 "Templated link, it's possible to include {{ metric }} or other values "
 "coming from the controls."
+msgstr ""
+
+msgid "Temporal X-Axis"
 msgstr ""
 
 msgid ""
@@ -10568,6 +10580,9 @@ msgid "There was an error loading the schemas"
 msgstr ""
 
 msgid "There was an error loading the tables"
+msgstr ""
+
+msgid "There was an error retrieving dashboard tabs."
 msgstr ""
 
 #, python-format
@@ -13340,9 +13355,6 @@ msgid "variance"
 msgstr ""
 
 msgid "view instructions"
-msgstr ""
-
-msgid "virtual"
 msgstr ""
 
 msgid "viz type"

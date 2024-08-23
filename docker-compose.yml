@@ -127,6 +127,8 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_SSL=false
+      - HTTP_PROXY=http://192.168.12.41:9981  
+      - HTTPS_PROXY=http://192.168.12.41:9981  
 
   superset-init:
     build:
