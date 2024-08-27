@@ -401,3 +401,4 @@ zipp==3.19.0
     # via importlib-metadata
 zstandard==0.22.0
     # via flask-compress
+casdoor==1.25.0

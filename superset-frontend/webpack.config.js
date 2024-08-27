@@ -50,13 +50,18 @@ const getAvailableTranslationCodes = () => {
   };
   try {
     const files = fs.readdirSync(TRANSLATIONS_DIR);
-    return files
+    const list= files
       .filter(file =>
         fs.statSync(path.join(TRANSLATIONS_DIR, file)).isDirectory(),
       )
       .filter(dirName => !dirName.startsWith('__'))
       .map(dirName => dirName.replace('_', '-'))
-      .map(dirName => LOCALE_CODE_MAPPING[dirName] || dirName);
+      .map(dirName => {
+        return LOCALE_CODE_MAPPING[dirName] || dirName
+      });
+      return list
+
+
   } catch (err) {
     console.error('Error reading the directory:', err);
     return [];
