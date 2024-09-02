@@ -28,19 +28,46 @@ from celery.schedules import crontab
 from flask_caching.backends.filesystemcache import FileSystemCache
 from dotenv import load_dotenv
 from flask_appbuilder.utils.base import get_safe_redirect
+from flask import current_app, g, make_response, request, Response
 
 load_dotenv()
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
+#Configure CORS
+APP_NAME = "数安仪表盘"
+# DEFAULT_SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_PATH = "/"
+ENABLE_PROXY_FIX = True
+TALISMAN_ENABLED = False
+# APPLICATION_ROOT = '/superset'
+FEATURE_FLAGS =  {
+  "EMBEDDED_SUPERSET": True,
+}
+
+STATIC_ASSETS_PREFIX = "/superset"
+WTF_CSRF_ENABLED = False
+ENABLE_CORS = True
+HTTP_HEADERS = {'X-Frame-Options': 'ALLOWALL'}
+CORS_OPTIONS = {
+    "origins": ["*","http://localhost"],
+    "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "resources": ["*"],
+    "allow_headers": ["*"],
+    "supports_credentials": True,
+}
+
+#Configure Babel
 BABEL_DEFAULT_LOCALE = "zh"
- 
 LANGUAGES = {
 "zh": {"flag": "cn", "name": "简体中文"},
 # "en": {"flag": "us", "name": "English"},
 }
 
 logger = logging.getLogger()
+
+#Configure Security
 SECRET_KEY = "jgBy0p7IjccxAOYG4Fh6QCCRzPikQ00Fv8+l5h99lLzi0sTT7sse89R4"
 SQLALCHEMY_DATABASE_URI = 'mysql://root:root@192.168.11.214:30309/superset'
 
@@ -51,7 +78,6 @@ try:
        request,
        redirect,
        url_for,
-       session,
     )
     from flask_appbuilder.views import expose
     from casdoor import CasdoorSDK
@@ -74,10 +100,17 @@ auth_config = {
 class MetaAuthView(AuthRemoteUserView):
     casdoor_sdk = CasdoorSDK(**auth_config)
 
-    @expose("/login/", methods=["GET", "POST"])
+    @expose("/login/", methods=["OPTIONS", "GET", "POST"])
     def login(self):
-        #check if user is already authenticated or a jwt token is present
-        token = request.headers.get("Authorization")
+        #check if user is already authenticated or a jwt token is presen
+        token = request.args.get('token', default=None, type=str)
+
+        if token == None:
+           token = request.headers.get("Authorization")
+
+        if token == None:
+           token = request.cookies.get("Authorization",default=None,type=str)
+
         if token:
             #remove bearer from token if present
             if token.startswith("Bearer "):
@@ -97,13 +130,43 @@ class MetaAuthView(AuthRemoteUserView):
         authorizationEndpoint = f"{auth_config['endpoint']}/login/oauth/authorize"
         params = {
             "client_id": auth_config["client_id"],
-            "redirect_uri": "http://192.168.11.155:8083/callback",
+            "redirect_uri": os.environ.get("APPLICATION_CALLBACK"),
             "response_type": "code",
             "scope": "read",
         }
         casdoorUrl = f"{authorizationEndpoint}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
         return redirect(casdoorUrl)
-    
+        """
+        REMOTE_USER user Authentication
+
+        :param username: user's username for remote auth
+        :type self: User model
+        """
+        user = self.find_user(username=username)
+
+        # User does not exist, create one if auto user registration.
+        if user is None and self.auth_user_registration:
+            role = self.find_role(self.auth_user_registration_role)
+            if username == 'datasafe':
+                role = self.appbuilder.sm.find_role('Admin')
+            user = self.add_user(
+                # All we have is REMOTE_USER, so we set
+                # the other fields to blank.
+                username=username,
+                first_name=username,
+                last_name="-",
+                email=username + "@email.notfound",
+                role=role,
+            )
+
+        # If user does not exist on the DB and not auto user registration,
+        # or user is inactive, go away.
+        elif user is None or (not user.is_active):
+            return None
+
+        self.update_user_auth_stat(user)
+        return user
+
     @expose("/callback/")
     def callback(self):
         code = request.args.get("code")
@@ -124,6 +187,39 @@ class MetaSecurityManager(SupersetSecurityManager):
     def __init__(self, appbuilder):
         super(MetaSecurityManager, self).__init__(appbuilder)
     
+
+    def auth_user_remote_user(self, username):
+        """
+        REMOTE_USER user Authentication
+
+        :param username: user's username for remote auth
+        :type self: User model
+        """
+        user = self.find_user(username=username)
+
+        # User does not exist, create one if auto user registration.
+        if user is None and self.auth_user_registration:
+            role = self.find_role(self.auth_user_registration_role)
+            if username == 'datasafe':
+                role = self.appbuilder.sm.find_role('Admin')
+            user = self.add_user(
+                # All we have is REMOTE_USER, so we set
+                # the other fields to blank.
+                username=username,
+                first_name=username,
+                last_name="-",
+                email=username + "@email.notfound",
+                role=role,
+            )
+
+        # If user does not exist on the DB and not auto user registration,
+        # or user is inactive, go away.
+        elif user is None or (not user.is_active):
+            return None
+
+        self.update_user_auth_stat(user)
+        return user
+
     @property
     def auth_remote_user_env_var(self) -> str:
         return self.appbuilder.get_app.config["AUTH_REMOTE_USER_ENV_VAR"]

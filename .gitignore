@@ -122,3 +122,6 @@ docker/*local*
 # Jest test report
 test-report.html
 superset/static/stats/statistics.html
+._superset_config.py
+._pytest.ini
+._docker-compose-image-tag.yml

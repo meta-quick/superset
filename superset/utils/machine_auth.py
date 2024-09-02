@@ -102,7 +102,7 @@ class MachineAuthProvider:
                     "value": cookie_val,
                     "domain": url.netloc,
                     "path": "/",
-                    "sameSite": "Lax",
+                    "sameSite": "None",
                     "httpOnly": True,
                 }
                 for cookie_name, cookie_val in cookies.items()
