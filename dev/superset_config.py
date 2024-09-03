@@ -193,7 +193,8 @@ class MetaAuthView(AuthRemoteUserView):
 
 
 class MetaSecurityManager(SupersetSecurityManager):
-    authremoteuserview = MetaAuthView
+    # authremoteuserview = MetaAuthView
+    authdbview = MetaAuthView
     casdoor_sdk = CasdoorJwt(auth_config)
     def __init__(self, appbuilder):
         super(MetaSecurityManager, self).__init__(appbuilder)
@@ -266,6 +267,6 @@ class MetaSecurityManager(SupersetSecurityManager):
 
 
 CUSTOM_SECURITY_MANAGER = MetaSecurityManager
-AUTH_TYPE = AUTH_REMOTE_USER
+# AUTH_TYPE = AUTH_REMOTE_USER
 AUTH_ROLE_PUBLIC = 'Admin'
 AUTH_USER_REGISTRATION = True
