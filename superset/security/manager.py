@@ -44,7 +44,7 @@ from flask_appbuilder.security.views import (
 )
 from flask_appbuilder.widgets import ListWidget
 from flask_babel import lazy_gettext as _
-from flask_login import AnonymousUserMixin, LoginManager
+from flask_login import AnonymousUserMixin, LoginManager, login_user
 from jwt.api_jwt import _jwt_global_obj
 from sqlalchemy import and_, inspect, or_
 from sqlalchemy.engine.base import Connection
@@ -2585,7 +2585,8 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
         """
         raw_token = req.headers.get(
             current_app.config["GUEST_TOKEN_HEADER_NAME"]
-        ) or req.form.get("guest_token")
+        ) or req.form.get("guest_token") or req.args.get("guest_token")
+
         if raw_token is None:
             return None
 
@@ -2599,6 +2600,7 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
                 raise ValueError("Guest token does not contain an rls_rules claim")
             if token.get("type") != "guest":
                 raise ValueError("This is not a guest token.")
+            login_user(AnonymousUserMixin(), force=True)
         except Exception:  # pylint: disable=broad-except
             # The login manager will handle sending 401s.
             # We don't need to send a special error message.

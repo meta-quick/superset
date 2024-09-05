@@ -46,6 +46,11 @@ class EmbeddedView(BaseSupersetView):
         :param add_extra_log_payload: added by `log_this_with_manual_updates`, set a
             default value to appease pylint
         """
+        #if guest_token existed
+        #guest_token = request.args["guest_token"]
+        # if guest_token is None:
+
+
         if not is_feature_enabled("EMBEDDED_SUPERSET"):
             abort(404)
 
@@ -63,13 +68,16 @@ class EmbeddedView(BaseSupersetView):
                 is_referrer_allowed = True
                 break
 
+        if request.referrer is None:
+            is_referrer_allowed = True    
+
         if not is_referrer_allowed:
             abort(403)
 
         # Log in as an anonymous user, just for this view.
         # This view needs to be visible to all users,
         # and building the page fails if g.user and/or ctx.user aren't present.
-        login_user(AnonymousUserMixin(), force=True)
+        # login_user(AnonymousUserMixin(), force=True)
 
         add_extra_log_payload(
             embedded_dashboard_id=uuid,
