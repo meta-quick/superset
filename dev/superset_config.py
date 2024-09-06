@@ -38,6 +38,7 @@ load_dotenv()
 log = logging.getLogger(__name__)
 
 #Configure CORS
+# SERVER_NAME = "bi.imeta.quick"
 APP_NAME = "数安仪表盘"
 # APP_ICON = "/static/assets/images/s.png"
 FAVICONS = [{"href":"http://192.168.11.155/static/assets/images/favicon.png"}]
@@ -50,7 +51,7 @@ ENABLE_PROXY_FIX = True
 # GUEST_TOKEN_HEADER_NAME = "Authorization";
 GLOBAL_ASYNC_QUERIES_REGISTER_REQUEST_HANDLERS = True
 # SUPERSET_WEBSERVER_DOMAINS=["192.168.11.214:30001","192.168.12.41:8087","192.168.11.155:80","192.168.11.155:8083"]
-SESSION_COOKIE_DOMAIN = '.imeta.quick'
+SESSION_COOKIE_DOMAIN = '.bi.imeta.quick'
 
 # TALISMAN_ENABLED = False
 # TALISMAN_DEV_CONFIG = {
@@ -207,6 +208,10 @@ class MetaAuthView(AuthRemoteUserView):
 
     @expose("/login/", methods=["OPTIONS", "GET", "POST"])
     def login(self):
+        if not g.user is None:
+            if g.user.is_authenticated:
+                next_url = request.args.get("next", "")
+                return redirect(get_safe_redirect(next_url))
         user = self.casdoor_sdk.parse()
         if user:
             _user = self.appbuilder.sm.auth_user_remote_user(user.get("name"))
@@ -302,9 +307,6 @@ class MetaSecurityManager(SupersetSecurityManager):
     
     @staticmethod
     def before_request():
-        if current_user.is_authenticated:
-            g.user = current_user
-            return
         user = g_casdoor_sdk.parse()
         if user:
             _user = appbuilder.sm.auth_user_remote_user(user.get("name"))

@@ -2600,7 +2600,6 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
                 raise ValueError("Guest token does not contain an rls_rules claim")
             if token.get("type") != "guest":
                 raise ValueError("This is not a guest token.")
-            login_user(AnonymousUserMixin(), force=True)
         except Exception:  # pylint: disable=broad-except
             # The login manager will handle sending 401s.
             # We don't need to send a special error message.

@@ -1688,7 +1688,7 @@ GUEST_ROLE_NAME = "Public"
 GUEST_TOKEN_JWT_SECRET = "test-guest-secret-change-me"
 GUEST_TOKEN_JWT_ALGO = "HS256"
 GUEST_TOKEN_HEADER_NAME = "X-GuestToken"
-GUEST_TOKEN_JWT_EXP_SECONDS = 300  # 5 minutes
+GUEST_TOKEN_JWT_EXP_SECONDS = 6000  # 5 minutes
 # Guest token audience for the embedded superset, either string or callable
 GUEST_TOKEN_JWT_AUDIENCE: Callable[[], str] | str | None = None
 
