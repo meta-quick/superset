@@ -1,6 +1,6 @@
 {
   "name": "@superset-ui/switchboard",
-  "version": "0.18.26-1",
+  "version": "0.18.26-3ifix",
   "description": "Switchboard is a library to make it easier to communicate across browser windows using the MessageChannel API",
   "sideEffects": false,
   "main": "lib/index.js",
@@ -9,6 +9,12 @@
     "esm",
     "lib"
   ],
+  "exports": {
+    ".": {
+      "import": "./esm/index.js",
+      "require": "./lib/index.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/apache/superset.git",
