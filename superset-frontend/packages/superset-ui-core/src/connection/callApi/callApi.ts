@@ -78,8 +78,6 @@ export default async function callApi({
   const fetchWithRetry = fetchRetry(fetch, fetchRetryOptions);
   const url = `${getFullUrl(url_, searchParams)}`;
 
-  console.log('@-url',url);
-  
   const request = {
     body,
     cache,
